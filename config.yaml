@@ -1,0 +1,64 @@
+# ---------------------------------------------------------------------------
+# AI Image Deblurring System - configuration
+# All paths are relative to the project root.
+# ---------------------------------------------------------------------------
+
+model:
+  # Human readable name shown in the UI.
+  name: "NAFNet-GoPro-width32"
+  # ONNX model exported by tools/export_onnx.py (portable, used by ONNX Runtime /
+  # OpenCV and as the source for building the TensorRT engine).
+  onnx_path: "models/nafnet_gopro_w32_256.onnx"
+  # TensorRT engine built ON THE JETSON by tools/build_engine.py.
+  engine_path: "models/nafnet_gopro_w32_256_fp16.engine"
+  # auto | tensorrt | onnxruntime | opencv
+  #   auto = TensorRT engine if available, else ONNX Runtime (CUDA/TensorRT EP),
+  #          else OpenCV DNN (CUDA if OpenCV was built with it, else CPU).
+  backend: "auto"
+  # fp16 (recommended on Jetson Nano, ~2x faster, half the memory) | fp32
+  precision: "fp16"
+  # Build the TensorRT engine automatically from the ONNX file if it is missing
+  # (takes several minutes on a Jetson Nano, only happens once).
+  build_engine_if_missing: true
+  # TensorRT builder workspace in MB (keep <= 1024 on a 4 GB Nano, 512 on 2 GB).
+  workspace_mb: 1024
+
+processing:
+  # Model input tile size. Read automatically from the model when its input
+  # shape is static; this value is used only for dynamic-shape models.
+  tile_size: 256
+  # Overlap between neighbouring tiles (pixels). Tiles are blended with a
+  # smooth window so no seams are visible. 0 = fastest, 32 = good quality.
+  tile_overlap: 32
+  # Images whose longest side is larger than this are downscaled before
+  # inference and the result is resized back to the ORIGINAL size.
+  # 0 = always process at full resolution (slow for big photos on the Nano).
+  max_input_side: 1280
+
+camera:
+  # usb | csi | <path to video file> | <rtsp/http URL>
+  source: "usb"
+  device_index: 0          # /dev/videoN for USB cameras
+  csi_sensor_id: 0         # sensor-id for nvarguscamerasrc (Raspberry Pi v2 / IMX219 ...)
+  width: 1280
+  height: 720
+  fps: 30
+  flip_method: 0           # CSI only: 0=none, 2=rotate 180
+  reconnect_attempts: 3
+
+realtime:
+  # Frames are resized to this width before inference (height keeps the
+  # aspect ratio). Smaller = higher FPS. 256-320 is a good start on the Nano.
+  process_width: 320
+  # side_by_side | output_only | split
+  view: "side_by_side"
+  display_width: 1280
+
+output:
+  save_dir: "results"
+  # Also save a side-by-side comparison image next to the result.
+  save_comparison: true
+
+ui:
+  preview_max_width: 520
+  preview_max_height: 420

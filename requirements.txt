@@ -1,0 +1,19 @@
+# ---- Runtime (Jetson Nano) ----------------------------------------------
+# On Jetson, install OpenCV / TensorRT / numpy / PIL from apt (JetPack), NOT pip:
+#   sudo apt install python3-opencv python3-numpy python3-yaml python3-tk \
+#                    python3-pil python3-pil.imagetk python3-libnvinfer python3-pip
+# Then only these come from pip:
+pycuda            # CUDA buffers for the TensorRT backend
+# onnxruntime-gpu # optional fallback backend (Jetson wheel from Nvidia, see README)
+
+# ---- Generic PC (development / CPU testing) ------------------------------
+numpy
+opencv-python
+pyyaml
+pillow
+
+# ---- Only needed on a PC to export / train the model ---------------------
+# torch
+# onnx
+# onnxruntime
+# gdown

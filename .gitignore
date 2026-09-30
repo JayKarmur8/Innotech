@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+models/*.pth
+models/*.onnx
+models/*.engine
+models/*.cache
+results/
+.venv/
